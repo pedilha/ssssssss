@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuário</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #747474;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            background-color: #faf3f3;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(247, 211, 211, 0.1);
+            margin-top: 20px;
+        }
+        #timer {
+            color: rgb(15, 3, 250);
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="text-center">Cadastro de Usuário</h1>
+
+    <div id="timer"></div>
+
+    <form id="cadastroForm" action="sucesso.html" method="POST">
+        <div class="mb-3">
+            <label for="nome" class="form-label">Nome:</label>
+            <input type="text" class="form-control" id="nome" name="nome" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">E-mail:</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="cpf" class="form-label">CPF:</label>
+            <input type="text" class="form-control" id="cpf" name="cpf" required maxlength="14" oninput="validarCPF()">
+        </div>
+
+        <div class="mb-3">
+            <label for="telefone" class="form-label">Telefone:</label>
+            <input type="tel" class="form-control" id="telefone" name="telefone" required>
+        </div>
+
+        <button id="submitBtn" type="submit" class="btn btn-primary w-100" disabled>Cadastrar</button>
+    </form>
+</div>
+
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Validação de CPF
+function validarCPF() {
+    const cpfInput = document.getElementById('cpf');
+    const cpf = cpfInput.value.replace(/\D/g, '');
+
+    if (cpf.length === 11 && validarDigitosCPF(cpf)) {
+        cpfInput.style.borderColor = 'green';
+        document.getElementById('submitBtn').disabled = false;
+    } else {
+        cpfInput.style.borderColor = 'red';
+        document.getElementById('submitBtn').disabled = true;
+    }
+}
+
+// Função para validar os dígitos do CPF
+function validarDigitosCPF(cpf) {
+    let soma = 0;
+    let resto;
+
+    // Validação do primeiro dígito
+    for (let i = 1; i <= 9; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    }
+    resto = (soma * 10) % 11;
+    if ((resto === 10) || (resto === 11)) resto = 0;
+    if (resto !== parseInt(cpf.substring(9, 10))) return false;
+
+    soma = 0;
+
+    // Validação do segundo dígito
+    for (let i = 1; i <= 10; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    }
+    resto = (soma * 10) % 11;
+    if ((resto === 10) || (resto === 11)) resto = 0;
+    if (resto !== parseInt(cpf.substring(10, 11))) return false;
+
+    return true;
+}
+
+// Timer decrescente
+function iniciarTimer() {
+    const fimCadastro = new Date('2024-09-29T23:59:59').getTime();
+    const timerElement = document.getElementById('timer');
+
+    const interval = setInterval(() => {
+        const agora = new Date().getTime();
+        const distancia = fimCadastro - agora;
+
+        if (distancia < 0) {
+            clearInterval(interval);
+            timerElement.innerHTML = "Período de cadastramento encerrado!";
+            document.getElementById('submitBtn').disabled = true;
+            return;
+        }
+
+        const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
+        const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+        const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+
+        timerElement.innerHTML = `Cadastro fecha em: ${dias}d ${horas}h ${minutos}m ${segundos}s`;
+    }, 1000);
+}
+
+iniciarTimer();
+</script>
+</body>
+</html>
